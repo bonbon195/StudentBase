@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Student Database</string>
+    <string name="add_faculty_title">Новый факультет</string>
+    <string name="submit">Подтвердить</string>
+    <string name="cancel">Отмена</string>
+    <string name="add_group_title">Новая группа</string>
+    <string name="add_student_title">Новый студент</string>
 </resources>
