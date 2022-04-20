@@ -5,18 +5,30 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import ru.bonbon.sdudentdatabase.entity.Faculty;
+
 public class AddFacultyDialogFragment extends DialogFragment {
 
     private EditText editText;
     AddFacultyDialogListener listener;
+    private Faculty currentFaculty;
+
+    public AddFacultyDialogFragment(Faculty currentFaculty) {
+        this.currentFaculty = currentFaculty;
+    }
+
+    public AddFacultyDialogFragment() {
+    }
 
     public interface AddFacultyDialogListener {
         public void onDialogPositiveClick(DialogFragment dialog);
@@ -41,6 +53,11 @@ public class AddFacultyDialogFragment extends DialogFragment {
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.dialog_faculty_add, null);
         editText = view.findViewById(R.id.faculty_name_et);
+        if (currentFaculty != null){
+            Log.d("tag", "not null " + currentFaculty.toString());
+            editText.setText(currentFaculty.getName(), TextView.BufferType.EDITABLE);
+        }
+
         builder.setView(view)
                 .setPositiveButton(R.string.submit, new DialogInterface.OnClickListener() {
             @Override
@@ -55,6 +72,14 @@ public class AddFacultyDialogFragment extends DialogFragment {
                     }
                 });
         return builder.create();
+    }
+
+    public Faculty getCurrentFaculty() {
+        return currentFaculty;
+    }
+
+    public void setCurrentFaculty(Faculty currentFaculty) {
+        this.currentFaculty = currentFaculty;
     }
 
     public EditText getEditText() {

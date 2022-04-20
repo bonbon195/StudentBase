@@ -1,19 +1,24 @@
 package ru.bonbon.sdudentdatabase;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Adapter;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -35,18 +40,19 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import ru.bonbon.sdudentdatabase.entity.Faculty;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener,
-        AdapterView.OnItemClickListener, AddFacultyDialogFragment.AddFacultyDialogListener{
-    ListView listView;
-    List<Faculty> faculties;
-    FloatingActionButton addFaculty;
-    AddFacultyDialogFragment dialogFragment;
-//    FacultyService facultyService;
-    static final String URL = "https://students-db1.herokuapp.com/";
-    static Retrofit retrofit = new Retrofit.Builder()
-        .baseUrl(URL)
-        .addConverterFactory(GsonConverterFactory.create())
-        .build();
-    static FacultyService facultyService = retrofit.create(FacultyService.class);
+        AdapterView.OnItemClickListener, AddFacultyDialogFragment.AddFacultyDialogListener {
+    private ListView listView;
+    private List<Faculty> faculties;
+    private FloatingActionButton addFaculty;
+    private AddFacultyDialogFragment dialogFragment;
+    private Faculty selectedFaculty;
+    private FacultyAdapter facultyAdapter;
+    final String URL = "https://students-db1.herokuapp.com/";
+    Retrofit retrofit = new Retrofit.Builder()
+            .baseUrl(URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build();
+    FacultyService facultyService = retrofit.create(FacultyService.class);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,26 +60,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_faculty);
         init();
     }
-    void init(){
+
+    void init() {
         addFaculty = findViewById(R.id.add_faculty);
         addFaculty.setOnClickListener(this);
-        listView = findViewById(R.id.faculties);
-        try {
-            faculties = new GetAllAsyncTask().execute().get();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        FacultyAdapter facultyAdapter = new FacultyAdapter(this, R.layout.item_faculty, faculties);
-        listView.setAdapter(facultyAdapter);
-        listView.setOnItemClickListener(this);
-        this.registerForContextMenu(listView);
+        getAllFaculties();
     }
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.add_faculty:
                 addFacultyDialog();
                 break;
@@ -86,13 +82,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         startActivity(intent);
     }
 
-    private void addFacultyDialog(){
+    private void addFacultyDialog() {
         dialogFragment = new AddFacultyDialogFragment();
+        dialogFragment.show(getSupportFragmentManager(), "addFaculty");
+    }
+
+    private void updateFacultyDialog(Faculty faculty) {
+        dialogFragment = new AddFacultyDialogFragment(faculty);
         dialogFragment.show(getSupportFragmentManager(), "addFaculty");
     }
 
     @Override
     public void onDialogPositiveClick(DialogFragment dialog) {
+        Faculty currentFaculty = dialogFragment.getCurrentFaculty();
         String name = dialogFragment.getEditText().getText().toString();
         if (!name.equals("")) {
             for (Faculty faculty : faculties) {
@@ -100,21 +102,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Toast.makeText(getApplicationContext(),
                             "Факультет с таким именем уже существует",
                             Toast.LENGTH_SHORT).show();
+                }else{
+                    if (currentFaculty == null){
+                        Faculty newFaculty = new Faculty(name);
+                        Log.d("tag", newFaculty.toString());
+                        sendFaculty(newFaculty);
+                    }else{
+                        currentFaculty.setName(name);
+                        updateFaculty(currentFaculty);
+                    }
                 }
             }
-            Faculty faculty = new Faculty(name);
-            Log.d("tag", faculty.toString());
-//            sendFaculty(faculty);
-            new SendAsyncTask().execute(faculty);
-            try {
-                List<Faculty> facultyList = new GetAllAsyncTask().execute().get();
-                faculties.add(facultyList.get(facultyList.size() - 1));
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
         }
     }
 
@@ -125,67 +123,110 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-//        switch (v.getId()){
-//            case R.id.:
-//                break;
-//        }
         super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.context_menu, menu);
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+        selectedFaculty = facultyAdapter.getItem(info.position);
+        Log.d("tag", selectedFaculty.toString());
+        menu.setHeaderTitle(selectedFaculty.getName());
     }
 
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
-//        switch (item.getItemId()){
-//            case R.id.: ;
-//                break;
-//        }
+        switch (item.getItemId()) {
+            case R.id.delete_menu_item:
+                deleteFaculty(selectedFaculty);
+                break;
+            case R.id.edit_menu_item:
+                updateFacultyDialog(selectedFaculty);
+                break;
+        }
 
         return super.onContextItemSelected(item);
     }
 
-    class GetAllAsyncTask extends AsyncTask<Void, Void, List<Faculty>>{
-
-        @Override
-        protected List<Faculty> doInBackground(Void... voids) {
-            Call<List<Faculty>> facultyCall = facultyService.getAll();
-            try {
-                Response<List<Faculty>> response = facultyCall.execute();
-                List<Faculty> facultyList = response.body();
-                Log.d("tag", response.body().toString());
-                return facultyList;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(List<Faculty> facultyList) {
-            for (Faculty faculty: facultyList){
-                Log.d("tag", faculty.toString());
-            }
-            super.onPostExecute(facultyList);
-        }
+    private void populateListView() {
+        listView = findViewById(R.id.faculties);
+        facultyAdapter = new FacultyAdapter(this, R.layout.item_faculty,
+                faculties);
+        listView.setAdapter(facultyAdapter);
+        listView.setOnItemClickListener(this);
+        this.registerForContextMenu(listView);
     }
 
-    class SendAsyncTask extends AsyncTask<Faculty, Void, Void>{
-
-        @Override
-        protected Void doInBackground(Faculty... faculties) {
-            Call<Faculty> facultyCall = facultyService.create(faculties[0]);
-            facultyCall.enqueue(new Callback<Faculty>() {
-                @Override
-                public void onResponse(Call<Faculty> call, Response<Faculty> response) {
-                    Faculty faculty = response.body();
-                    Log.d("tag", "what" + faculty.toString());
+    private void getAllFaculties() {
+        Call<List<Faculty>> facultyCall = facultyService.getAll();
+        facultyCall.enqueue(new Callback<List<Faculty>>() {
+            @Override
+            public void onResponse(Call<List<Faculty>> call, Response<List<Faculty>> response) {
+                Log.d("tag", "response " + response.body().toString());
+                faculties = (response.body());
+                for (Faculty faculty : faculties) {
+                    Log.d("tag", "getall " + faculty.toString());
                 }
-
-                @Override
-                public void onFailure(Call<Faculty> call, Throwable t) {
-                    t.printStackTrace();
+                if (facultyAdapter == null) {
+                    populateListView();
+                } else {
+                    facultyAdapter.clear();
+                    facultyAdapter.addAll(faculties);
+                    facultyAdapter.notifyDataSetChanged();
+                    Log.d("tag", "listview updated");
                 }
-            });
-            return null;
-        }
+            }
+
+            @Override
+            public void onFailure(Call<List<Faculty>> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
     }
 
+    private void sendFaculty(Faculty faculty) {
+        Call<Faculty> facultyCall = facultyService.create(faculty);
+        facultyCall.enqueue(new Callback<Faculty>() {
+            @Override
+            public void onResponse(Call<Faculty> call, Response<Faculty> response) {
+                Faculty faculty = response.body();
+                Log.d("tag", "added faculty: " + faculty.toString());
+                getAllFaculties();
+            }
+
+            @Override
+            public void onFailure(Call<Faculty> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
+    }
+
+    private void deleteFaculty(Faculty faculty){
+        Call<Void> facultyCall = facultyService.delete(faculty.getId());
+        facultyCall.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (faculties.contains(faculty)) faculties.remove(faculty);
+                getAllFaculties();
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
+    }
+    private void updateFaculty(Faculty faculty){
+        Call<Void> facultyCall = facultyService.update(faculty);
+        facultyCall.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                getAllFaculties();
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
+    }
 }
+
