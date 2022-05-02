@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:paddingHorizontal="10dp">
+    <EditText
+        android:id="@+id/student_name_et"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:hint="Введите имя"
+        tools:text="sample name"/>
+    <EditText
+        android:id="@+id/student_surname_et"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:hint="Введите фамилию"
+        tools:text="sample surname"/>
+    <EditText
+        android:id="@+id/student_patronymic_et"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:hint="Введите отчество"
+        tools:text="sample patronymic"/>
+    <EditText
+        android:id="@+id/student_birth_date_et"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:hint="Введите дату рождения"
+        tools:text="sample birth date"/>
+
+</LinearLayout>

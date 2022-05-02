@@ -1,65 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="40dp"
+    android:layout_height="80dp"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="2dp">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:orientation="horizontal">
-        <TextView
-            android:paddingHorizontal="5dp"
-            android:id="@+id/student_surname"
-            android:layout_width="100dp"
-            android:layout_height="match_parent"
-            tools:text="Фамилия"/>
-        <TextView
-            android:paddingHorizontal="5dp"
-            android:id="@+id/student_name"
-            android:layout_width="100dp"
-            android:layout_height="match_parent"
-            tools:text="Константин"/>
-        <TextView
-            android:paddingBottom="0dp"
-            android:paddingHorizontal="5dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="38dp"
+            android:orientation="horizontal"
+            android:divider="?primaryTextColor">
+            <TextView
+                android:paddingHorizontal="5dp"
+                android:id="@+id/student_surname"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:textAlignment="center"
+                android:gravity="center"
+                android:textColor="?primaryTextColor"
+                tools:text="Фамилия"/>
+            <TextView
+                android:paddingHorizontal="5dp"
+                android:id="@+id/student_name"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:textAlignment="center"
+                android:gravity="center"
+                android:textColor="?primaryTextColor"
+                tools:text="Константин"/>
+            <TextView
+                android:paddingBottom="0dp"
+                android:paddingHorizontal="5dp"
+                android:id="@+id/student_patronymic"
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:textAlignment="center"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:textColor="?primaryTextColor"
+                tools:text="Александрович" />
+        </LinearLayout>
 
-            android:id="@+id/student_patronymic"
-            android:layout_width="100dp"
-            android:layout_height="match_parent"
-            tools:text="Александрович"/>
         <TextView
-            android:paddingTop="10dp"
             android:textAlignment="center"
             android:id="@+id/student_birth_date"
-            android:layout_width="80dp"
-            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_height="38dp"
+            android:gravity="center"
+            android:textColor="?primaryTextColor"
             tools:text="20.02.2009"/>
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:src="@drawable/ic_baseline_more_vert_24"/>
     </LinearLayout>
-
-<!--    <LinearLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="40dp">-->
-<!--        <TextView-->
-<!--            android:textAlignment="center"-->
-<!--            android:id="@+id/student_group"-->
-<!--            android:layout_width="100dp"-->
-<!--            android:layout_height="match_parent"-->
-<!--            tools:text="Ис-113">-->
-
-<!--        </TextView>-->
-<!--        <TextView-->
-<!--            android:textAlignment="center"-->
-<!--            android:id="@+id/student_faculty"-->
-<!--            android:layout_width="200dp"-->
-<!--            android:layout_height="match_parent"-->
-<!--            tools:text="Информационные системы и программирование"/>-->
-<!--    </LinearLayout>-->
-
-
-
 </LinearLayout>

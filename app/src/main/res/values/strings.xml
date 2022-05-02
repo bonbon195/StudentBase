@@ -5,4 +5,5 @@
     <string name="cancel">Отмена</string>
     <string name="add_group_title">Новая группа</string>
     <string name="add_student_title">Новый студент</string>
+    <string name="empty">Пусто</string>
 </resources>

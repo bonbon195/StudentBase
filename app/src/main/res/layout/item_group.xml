@@ -4,11 +4,11 @@
     android:layout_height="60dp"
     xmlns:tools="http://schemas.android.com/tools">
     <TextView
-        android:id="@+id/faculty_name"
+        android:id="@+id/group_name"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:textAlignment="center"
         android:gravity="center"
         android:textColor="?primaryTextColor"
-        tools:text="sample faculty"/>
+        tools:text="sample group"/>
 </LinearLayout>

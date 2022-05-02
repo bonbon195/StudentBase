@@ -6,11 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Group {
-    @SerializedName("id")
     private int id;
-    @SerializedName("name")
     private String name;
-    @SerializedName("id_faculty")
     private int idFaculty;
 
     public Group(int id, String name, int idFaculty) {
@@ -49,6 +46,15 @@ public class Group {
 
     public void setIdFaculty(int idFaculty) {
         this.idFaculty = idFaculty;
+    }
+
+    @Override
+    public String toString() {
+        return "Group{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", idFaculty=" + idFaculty +
+                '}';
     }
 }
 
