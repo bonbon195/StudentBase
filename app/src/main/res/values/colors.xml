@@ -9,7 +9,13 @@
     <color name="white">#FFFFFFFF</color>
     <color name="peach_pastel">#FFA480</color>
     <color name="peach_pastel2">#FF7652</color>
+    <color name="peach_pastel3">#FF8969</color>
     <color name="orange">#FD5A2F</color>
     <color name="teal_pastel">#80FFFA</color>
     <color name="teal_pastel2">#2FFFF0</color>
+    <color name="pixel_blue">#4285F4</color>
+    <color name="pixel_blue2">#1a73e8</color>
+    <color name="pixel_blue3">#d3e3fd</color>
+    <color name="pixel_blue4">#7292C8</color>
+    <color name="moonstone">#3aa8c1</color>
 </resources>
